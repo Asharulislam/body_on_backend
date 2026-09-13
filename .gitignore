@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+
+# environment secrets
+.env
+
+# prisma generated client (rebuilt from schema)
+src/generated
+
+# build output
+dist
+
+# logs
+*.log
+
+# OS files
+.DS_Store
