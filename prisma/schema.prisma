@@ -1,25 +1,49 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+    provider = "prisma-client"
+    output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
 }
 
 enum Role {
-  customer
-  gym_owner
-  super_admin
+    customer
+    gym_owner
+    super_admin
+}
+
+enum GymStatus {
+    pending
+    approved
+    rejected
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(customer)
-  profileImage String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+    id           String   @id @default(uuid())
+    name         String
+    email        String   @unique
+    passwordHash String
+    role         Role     @default(customer)
+    profileImage String?
+    isLocked     Boolean  @default(false)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    gym          Gym?
+}
+
+model Gym {
+    id              String    @id @default(uuid())
+    name            String
+    description     String?
+    address         String
+    city            String
+    phone           String?
+    logoUrl         String?
+    status          GymStatus @default(pending)
+    rejectionReason String?
+    ownerId         String    @unique
+    owner           User      @relation(fields: [ownerId], references: [id])
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
 }

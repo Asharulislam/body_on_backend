@@ -8,6 +8,7 @@ export async function signupUser(input: {
   email: string
   password: string
   role?: Role
+  profileImage?: string
 }) {
   const existing = await prisma.user.findUnique({ where: { email: input.email } })
   if (existing) throw new Error('EMAIL_IN_USE')
@@ -20,6 +21,7 @@ export async function signupUser(input: {
       email: input.email,
       passwordHash,
       role: input.role ?? Role.customer,
+      profileImage: input.profileImage,
     },
   })
 

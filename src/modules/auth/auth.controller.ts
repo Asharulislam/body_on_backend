@@ -6,7 +6,7 @@ const PUBLIC_SIGNUP_ROLES: Role[] = [Role.customer, Role.gym_owner];
 
 export async function signup(req: Request, res: Response) {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role , profileImage} = req.body;
     if (!name || !email || !password) {
       return res
         .status(400)
@@ -15,7 +15,7 @@ export async function signup(req: Request, res: Response) {
     if (role !== undefined && !PUBLIC_SIGNUP_ROLES.includes(role)) {
       return res.status(400).json({ error: "invalid role" });
     }
-    const user = await signupUser({ name, email, password, role });
+    const user = await signupUser({ name, email, password, role ,profileImage});
     return res.status(201).json(user);
   } catch (err: any) {
     if (err.message === "EMAIL_IN_USE") {
