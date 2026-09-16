@@ -21,7 +21,7 @@ enum GymStatus {
 
 model User {
     id           String   @id @default(uuid())
-    name         String
+    fullName     String
     email        String   @unique
     passwordHash String
     role         Role     @default(customer)
@@ -34,13 +34,12 @@ model User {
 
 model Gym {
     id              String    @id @default(uuid())
-    name            String
+    gymName         String
     description     String?
     address         String
     city            String
     phone           String?
-    logoUrl         String?
-    status          GymStatus @default(pending)
+    gymStatus       GymStatus @default(pending)
     rejectionReason String?
     ownerId         String    @unique
     owner           User      @relation(fields: [ownerId], references: [id])
