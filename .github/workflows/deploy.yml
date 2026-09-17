@@ -16,6 +16,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/body_on_backend
+            git reset --hard origin/main
             git pull origin main
             npm install
             npx prisma migrate deploy
