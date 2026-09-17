@@ -3,6 +3,7 @@ import prisma from "../../core/config/prisma";
 import { Role } from "../../generated/prisma/enums.js";
 import { signToken } from "../../utils/jwt";
 import { SigninInput } from "./auth.validation.js";
+import { getViewUrl } from "../upload/upload.service.js";
 
 export async function signupUser(input: {
   fullName: string;
@@ -28,11 +29,16 @@ export async function signupUser(input: {
     },
   });
 
+  const profileImageUrl = user.profileImage
+    ? await getViewUrl(user.profileImage)
+    : null;
+
   return {
     id: user.id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    profileImageUrl,
   };
 }
 
@@ -45,6 +51,10 @@ export async function signinUser(input: SigninInput) {
 
   const token = signToken({ userId: user.id, role: user.role });
 
+  const profileImageUrl = user.profileImage
+    ? await getViewUrl(user.profileImage)
+    : null;
+
   return {
     token,
     user: {
@@ -52,6 +62,7 @@ export async function signinUser(input: SigninInput) {
       fullName: user.fullName,
       email: user.email,
       role: user.role,
+      profileImageUrl,
     },
   };
 }
