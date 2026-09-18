@@ -185,6 +185,16 @@ export const openapiSpec = {
         },
       },
 
+      ViewUrl: {
+        type: 'object',
+        properties: {
+          url: {
+            type: 'string',
+            description: 'presigned S3 GET URL, valid for 5 minutes',
+          },
+        },
+      },
+
       Health: {
         type: 'object',
         properties: {
@@ -316,6 +326,32 @@ export const openapiSpec = {
           400: errorResponse('validation failed'),
           401: errorResponse('missing or invalid token'),
           500: errorResponse('could not create upload url'),
+        },
+      },
+    },
+
+    '/upload/view-url': {
+      get: {
+        tags: ['Upload'],
+        summary: 'Get a presigned URL to view a private object',
+        description:
+          'Pass the key returned by /upload/url. The URL expires after 5 minutes.',
+        security: bearerAuth,
+        parameters: [
+          {
+            name: 'key',
+            in: 'query',
+            required: true,
+            description: 'S3 object key',
+            schema: { type: 'string' },
+            example: 'gyms/abc123.jpg',
+          },
+        ],
+        responses: {
+          200: jsonResponse('presigned url issued', 'ViewUrl'),
+          400: errorResponse('key is required'),
+          401: errorResponse('missing or invalid token'),
+          500: errorResponse('something went wrong'),
         },
       },
     },
