@@ -8,6 +8,10 @@ const app = express()
 app.use(express.json())
 
 
+app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() })
+})
+
 app.use('/auth', authRoutes)
 
 app.use('/gym', gymRoutes)
