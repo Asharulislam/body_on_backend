@@ -1,4 +1,4 @@
-import { getUploadUrl } from "./upload.service"
+import { getUploadUrl, getViewUrl } from "./upload.service"
 import { uploadSchema } from "./upload.validation"
 import { Request, Response } from 'express'
 
@@ -17,5 +17,18 @@ export async function createUploadUrl(req: Request, res: Response) {
   } catch (err) {
     console.error(err)
     return res.status(500).json({ error: 'could not create upload url' })
+  }
+}
+
+
+export async function createViewUrl(req : Request, res: Response) {
+  try {
+    const { key } = req.query   // or req.body, your choice
+    if (!key) return res.status(400).json({ error: 'key is required' })
+
+    const url = await getViewUrl(key as string)
+    res.json({ url })
+  } catch (err) {
+    res.status(500).json({ error: 'something went wrong' })
   }
 }
