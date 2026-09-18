@@ -76,12 +76,6 @@ export const openapiSpec = {
             default: 'customer',
             description: 'defaults to customer when omitted',
           },
-          profileImage: {
-            type: 'string',
-            format: 'uri',
-            description: 'S3 key or URL from /upload/url',
-            example: 'profiles/abc123.jpg',
-          },
         },
       },
 
@@ -155,10 +149,6 @@ export const openapiSpec = {
           fullName: { type: 'string', example: 'John Doe' },
           email: { type: 'string', format: 'email', example: 'john@example.com' },
           role: { type: 'string', enum: ['customer', 'gym_owner', 'super_admin'] },
-          profileImageUrl: {
-            type: ['string', 'null'],
-            description: 'presigned view URL, or null when no image is set',
-          },
         },
       },
 
@@ -228,7 +218,7 @@ export const openapiSpec = {
           role: 'customer',
         }),
         responses: {
-          201: jsonResponse('user created', 'User'),
+          201: jsonResponse('user created and signed in', 'AuthResult'),
           400: errorResponse('validation failed'),
           409: errorResponse('email already in use'),
           500: errorResponse('something went wrong'),
