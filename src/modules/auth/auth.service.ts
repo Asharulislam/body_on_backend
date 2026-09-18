@@ -10,7 +10,7 @@ export async function signupUser(input: {
   email: string;
   password: string;
   role?: Role;
-  profileImage?: string;
+ 
 }) {
   const existing = await prisma.user.findUnique({
     where: { email: input.email },
@@ -25,20 +25,15 @@ export async function signupUser(input: {
       email: input.email,
       passwordHash,
       role: input.role ?? Role.customer,
-      profileImage: input.profileImage,
     },
   });
 
-  const profileImageUrl = user.profileImage
-    ? await getViewUrl(user.profileImage)
-    : null;
 
   return {
     id: user.id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
-    profileImageUrl,
   };
 }
 
@@ -51,10 +46,6 @@ export async function signinUser(input: SigninInput) {
 
   const token = signToken({ userId: user.id, role: user.role });
 
-  const profileImageUrl = user.profileImage
-    ? await getViewUrl(user.profileImage)
-    : null;
-
   return {
     token,
     user: {
@@ -62,7 +53,6 @@ export async function signinUser(input: SigninInput) {
       fullName: user.fullName,
       email: user.email,
       role: user.role,
-      profileImageUrl,
     },
   };
 }
