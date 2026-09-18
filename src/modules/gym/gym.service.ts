@@ -14,10 +14,25 @@ export async function createGym(ownerId: string, input: CreateGymInput) {
   return gym;
 }
 
+// key → temporary url
+function toImageUrls(images: { id: string; imageKey: string }[]) {
+  return Promise.all(
+    images.map(async (img) => ({
+      id: img.id,
+      url: await getViewUrl(img.imageKey),
+    }))
+  );
+}
+
 export async function getMyGym(ownerId: string) {
-  const gym = await prisma.gym.findUnique({ where: { ownerId } });
+  const gym = await prisma.gym.findUnique({
+    where: { ownerId },
+    include: { gymImages: { orderBy: { createdAt: "desc" } } },
+  });
   if (!gym) throw new Error("GYM_NOT_FOUND");
-  return gym;
+
+  const { gymImages, ...rest } = gym;
+  return { ...rest, gymImages: await toImageUrls(gymImages) };
 }
 
 export async function updateGym(ownerId: string, input: UpdateGymInput) {
@@ -63,10 +78,5 @@ export async function getGymImages(ownerId: string) {
     orderBy: { createdAt: 'desc' },
   })
 
-  return Promise.all(
-    images.map(async (img) => ({
-      id: img.id,
-      url: await getViewUrl(img.imageKey),   // key → temporary url
-    }))
-  )
+  return toImageUrls(images)
 }
