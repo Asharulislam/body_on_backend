@@ -11,9 +11,9 @@ if (!connectionString) {
 
 const adapter = new PrismaPg({
   connectionString,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : false,
 });
 
 const prisma = new PrismaClient({ adapter });
