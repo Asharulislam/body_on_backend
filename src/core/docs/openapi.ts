@@ -218,7 +218,7 @@ export const openapiSpec = {
           role: 'customer',
         }),
         responses: {
-          201: jsonResponse('user created', 'User'),
+          201: jsonResponse('user created and signed in', 'AuthResult'),
           400: errorResponse('validation failed'),
           409: errorResponse('email already in use'),
           500: errorResponse('something went wrong'),

@@ -29,11 +29,16 @@ export async function signupUser(input: {
   });
 
 
+  const token = signToken({ userId: user.id, role: user.role });
+
   return {
-    id: user.id,
-    fullName: user.fullName,
-    email: user.email,
-    role: user.role,
+    token,
+    user: {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    },
   };
 }
 
