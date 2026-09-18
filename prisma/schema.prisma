@@ -45,12 +45,24 @@ model Gym {
     createdAt       DateTime   @default(now())
     updatedAt       DateTime   @updatedAt
     gymImages       GymImage[]
+    machines        Machine[]
 }
 
 model GymImage {
     id        String   @id @default(uuid())
-    key       String
+    imageKey  String
     gymId     String
     gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
+}
+
+model Machine {
+    id          String   @id @default(uuid())
+    machineName String
+    description String?
+    imageKey    String?
+    gymId       String
+    gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }

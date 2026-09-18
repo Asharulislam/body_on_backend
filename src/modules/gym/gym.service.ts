@@ -31,7 +31,7 @@ export async function updateGym(ownerId: string, input: UpdateGymInput) {
 }
 
 //gym images
-export async function addGymImage(ownerId: string, key: string) {
+export async function addGymImage(ownerId: string, imageKey: string) {
   const gym = await prisma.gym.findUnique({ where: { ownerId } });
   if (!gym) throw new Error("GYM_NOT_FOUND");
 
@@ -39,7 +39,7 @@ export async function addGymImage(ownerId: string, key: string) {
   if (count >= MAX_IMAGES) throw new Error("IMAGE_LIMIT_REACHED");
 
   return prisma.gymImage.create({
-    data: { key, gymId: gym.id },
+    data: { imageKey, gymId: gym.id },
   });
 }
 
@@ -66,7 +66,7 @@ export async function getGymImages(ownerId: string) {
   return Promise.all(
     images.map(async (img) => ({
       id: img.id,
-      url: await getViewUrl(img.key),   // key → temporary url
+      url: await getViewUrl(img.imageKey),   // key → temporary url
     }))
   )
 }
