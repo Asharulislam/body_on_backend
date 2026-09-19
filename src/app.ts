@@ -4,6 +4,7 @@ import openapiSpec from './core/docs/openapi'
 import authRoutes from './modules/auth/auth.routes'
 import gymRoutes from './modules/gym/gym.routes'
 import uploadRoutes from './modules/upload/upload.routes'
+import machinesRoutes from './modules/machines/machines.routes'
 
 
 const app = express()
@@ -33,4 +34,6 @@ app.use('/auth', authRoutes)
 app.use('/gym', gymRoutes)
 
 app.use('/upload', uploadRoutes)
+
+app.use('/machines', machinesRoutes)
 export default app

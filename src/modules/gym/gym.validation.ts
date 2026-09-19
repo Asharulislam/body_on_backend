@@ -16,5 +16,11 @@ export const updateGymSchema = z.object({
   phone: z.string().optional(),
 })
 
+export const addGymImageSchema = z.object({
+  key: z.string().min(1, 'key is required'),
+})
+
+
+export type AddGymImageInput = z.infer<typeof addGymImageSchema>
 export type UpdateGymInput = z.infer<typeof updateGymSchema>
 export type CreateGymInput = z.infer<typeof createGymSchema>

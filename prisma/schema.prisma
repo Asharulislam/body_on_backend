@@ -32,16 +32,37 @@ model User {
 }
 
 model Gym {
-    id              String    @id @default(uuid())
+    id              String     @id @default(uuid())
     gymName         String
     description     String?
     address         String
     city            String
     phone           String?
-    gymStatus       GymStatus @default(pending)
+    gymStatus       GymStatus  @default(pending)
     rejectionReason String?
-    ownerId         String    @unique
-    owner           User      @relation(fields: [ownerId], references: [id])
-    createdAt       DateTime  @default(now())
-    updatedAt       DateTime  @updatedAt
+    ownerId         String     @unique
+    owner           User       @relation(fields: [ownerId], references: [id])
+    createdAt       DateTime   @default(now())
+    updatedAt       DateTime   @updatedAt
+    gymImages       GymImage[]
+    machines        Machine[]
+}
+
+model GymImage {
+    id        String   @id @default(uuid())
+    imageKey  String
+    gymId     String
+    gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+}
+
+model Machine {
+    id          String   @id @default(uuid())
+    machineName String
+    description String
+    imageKey    String
+    gymId       String
+    gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }
