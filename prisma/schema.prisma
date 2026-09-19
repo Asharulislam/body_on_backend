@@ -59,8 +59,8 @@ model GymImage {
 model Machine {
     id          String   @id @default(uuid())
     machineName String
-    description String?
-    imageKey    String?
+    description String
+    imageKey    String
     gymId       String
     gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
     createdAt   DateTime @default(now())
