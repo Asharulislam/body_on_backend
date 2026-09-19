@@ -7,6 +7,13 @@ datasource db {
     provider = "postgresql"
 }
 
+enum NotificationType {
+    gym_approved
+    gym_rejected
+    account_locked
+    general
+}
+
 enum Role {
     customer
     gym_owner
@@ -20,15 +27,18 @@ enum GymStatus {
 }
 
 model User {
-    id           String   @id @default(uuid())
-    fullName     String
-    email        String   @unique
-    passwordHash String
-    role         Role     @default(customer)
-    isLocked     Boolean  @default(false)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    gym          Gym?
+    id              String         @id @default(uuid())
+    fullName        String
+    email           String         @unique
+    passwordHash    String
+    profileImageKey String?
+    role            Role           @default(customer)
+    isLocked        Boolean        @default(false)
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @updatedAt
+    gym             Gym?
+    notifications   Notification[]
+    deviceTokens    DeviceToken[]
 }
 
 model Gym {
@@ -65,4 +75,23 @@ model Machine {
     gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+    id        String           @id @default(uuid())
+    userId    String
+    user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    type      NotificationType @default(general)
+    title     String
+    body      String
+    isRead    Boolean          @default(false)
+    createdAt DateTime         @default(now())
+}
+
+model DeviceToken {
+    id        String   @id @default(uuid())
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    token     String   @unique
+    createdAt DateTime @default(now())
 }
