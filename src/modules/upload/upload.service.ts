@@ -25,5 +25,5 @@ export async function getUploadUrl(input: {
 // generate a presigned GET url for viewing a private object
 export async function getViewUrl(key: string) {
   const command = new GetObjectCommand({ Bucket: S3_BUCKET, Key: key })
-  return getSignedUrl(s3, command, { expiresIn: 7200 }) // 5 min
+  return getSignedUrl(s3, command, { expiresIn: 7200 }) 
 }
