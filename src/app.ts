@@ -6,6 +6,7 @@ import gymRoutes from "./modules/gym/gym.routes";
 import uploadRoutes from "./modules/upload/upload.routes";
 import machinesRoutes from "./modules/machines/machines.routes";
 import userRoutes from "./modules/user/user.routes";
+import notificationRoutes from "./modules/notification/notifications.routes";
 
 const app = express();
 app.use(express.json());
@@ -41,4 +42,6 @@ app.use("/upload", uploadRoutes);
 app.use("/machines", machinesRoutes);
 
 app.use("/profile", userRoutes);
+
+app.use("/notifications", notificationRoutes);
 export default app;
