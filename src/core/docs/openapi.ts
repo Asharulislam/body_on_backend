@@ -54,6 +54,7 @@ export const openapiSpec = {
     { name: 'Auth' },
     { name: 'Gym' },
     { name: 'Upload' },
+    { name: 'Machines' },
   ],
   components: {
     securitySchemes: {
@@ -127,6 +128,32 @@ export const openapiSpec = {
         },
       },
 
+      // mirrors createMachineSchema in modules/machines/machines.validation.ts
+      CreateMachineInput: {
+        type: 'object',
+        required: ['machineName', 'description', 'imageKey'],
+        properties: {
+          machineName: { type: 'string', minLength: 2, example: 'Leg Press' },
+          description: { type: 'string', minLength: 1, example: '45-degree plate-loaded leg press' },
+          imageKey: {
+            type: 'string',
+            minLength: 1,
+            description: 'key returned by /upload/url (folder: machines)',
+            example: 'machines/abc123.jpg',
+          },
+        },
+      },
+
+      // mirrors updateMachineSchema in modules/machines/machines.validation.ts — all optional
+      UpdateMachineInput: {
+        type: 'object',
+        properties: {
+          machineName: { type: 'string', minLength: 2, example: 'Leg Press' },
+          description: { type: 'string', minLength: 1, example: 'Recently serviced' },
+          imageKey: { type: 'string', minLength: 1, example: 'machines/def456.jpg' },
+        },
+      },
+
       // ---- responses ------------------------------------------------------
 
       Error: {
@@ -174,6 +201,46 @@ export const openapiSpec = {
           ownerId: { type: 'string', format: 'uuid' },
           createdAt: { type: 'string', format: 'date-time' },
           updatedAt: { type: 'string', format: 'date-time' },
+        },
+      },
+
+      // full record — returned by create and update
+      Machine: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          machineName: { type: 'string', example: 'Leg Press' },
+          description: { type: 'string', example: '45-degree plate-loaded leg press' },
+          imageKey: { type: 'string', example: 'machines/abc123.jpg' },
+          gymId: { type: 'string', format: 'uuid' },
+          createdAt: { type: 'string', format: 'date-time' },
+          updatedAt: { type: 'string', format: 'date-time' },
+        },
+      },
+
+      // returned by list and get-one — imageKey is swapped for a viewable URL
+      MachineView: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          machineName: { type: 'string', example: 'Leg Press' },
+          description: { type: 'string', example: '45-degree plate-loaded leg press' },
+          imageUrl: {
+            type: ['string', 'null'],
+            description: 'presigned S3 GET URL, valid for 5 minutes',
+          },
+        },
+      },
+
+      MachineList: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/MachineView' },
+      },
+
+      DeleteResult: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
         },
       },
 
@@ -351,6 +418,95 @@ export const openapiSpec = {
           200: jsonResponse('presigned url issued', 'ViewUrl'),
           400: errorResponse('key is required'),
           401: errorResponse('missing or invalid token'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+    },
+
+    '/machines': {
+      post: {
+        tags: ['Machines'],
+        summary: "Add a machine to the signed-in owner's gym",
+        description:
+          'Requires the gym_owner role. Upload the image first via /upload/url and send its key.',
+        security: bearerAuth,
+        requestBody: jsonBody('CreateMachineInput', {
+          machineName: 'Leg Press',
+          description: '45-degree plate-loaded leg press',
+          imageKey: 'machines/abc123.jpg',
+        }),
+        responses: {
+          201: jsonResponse('machine created', 'Machine'),
+          400: errorResponse('validation failed'),
+          401: errorResponse('missing or invalid token'),
+          403: errorResponse('forbidden: not a gym owner'),
+          404: errorResponse('no gym found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+      get: {
+        tags: ['Machines'],
+        summary: "List machines in the signed-in owner's gym",
+        description: 'Newest first.',
+        security: bearerAuth,
+        responses: {
+          200: jsonResponse('the machines', 'MachineList'),
+          401: errorResponse('missing or invalid token'),
+          403: errorResponse('forbidden: not a gym owner'),
+          404: errorResponse('no gym found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+    },
+
+    '/machines/{id}': {
+      parameters: [
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'machine id',
+          schema: { type: 'string', format: 'uuid' },
+        },
+      ],
+      get: {
+        tags: ['Machines'],
+        summary: 'Get one machine',
+        security: bearerAuth,
+        responses: {
+          200: jsonResponse('the machine', 'MachineView'),
+          401: errorResponse('missing or invalid token'),
+          403: errorResponse('forbidden: not a gym owner'),
+          404: errorResponse('no gym found / machine not found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+      patch: {
+        tags: ['Machines'],
+        summary: 'Update a machine',
+        description: 'Send only the fields you want to change.',
+        security: bearerAuth,
+        requestBody: jsonBody('UpdateMachineInput', {
+          description: 'Recently serviced',
+        }),
+        responses: {
+          200: jsonResponse('machine updated', 'Machine'),
+          400: errorResponse('validation failed'),
+          401: errorResponse('missing or invalid token'),
+          403: errorResponse('forbidden: not a gym owner'),
+          404: errorResponse('no gym found / machine not found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+      delete: {
+        tags: ['Machines'],
+        summary: 'Delete a machine',
+        security: bearerAuth,
+        responses: {
+          200: jsonResponse('machine deleted', 'DeleteResult'),
+          401: errorResponse('missing or invalid token'),
+          403: errorResponse('forbidden: not a gym owner'),
+          404: errorResponse('no gym found / machine not found'),
           500: errorResponse('something went wrong'),
         },
       },
