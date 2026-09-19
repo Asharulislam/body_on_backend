@@ -55,6 +55,8 @@ export const openapiSpec = {
     { name: 'Gym' },
     { name: 'Upload' },
     { name: 'Machines' },
+    { name: 'Profile' },
+    { name: 'Notifications' },
   ],
   components: {
     securitySchemes: {
@@ -154,6 +156,33 @@ export const openapiSpec = {
         },
       },
 
+      // mirrors updateProfileSchema in modules/user/user.validation.ts — all optional
+      UpdateProfileInput: {
+        type: 'object',
+        properties: {
+          fullName: { type: 'string', minLength: 2, example: 'John Doe' },
+          profileImage: {
+            type: 'string',
+            description: 'key returned by /upload/url (folder: profiles)',
+            example: 'profiles/abc123.jpg',
+          },
+        },
+      },
+
+      // mirrors saveTokenSchema in modules/notification/notification.validation.ts
+      SaveDeviceTokenInput: {
+        type: 'object',
+        required: ['token'],
+        properties: {
+          token: {
+            type: 'string',
+            minLength: 1,
+            description: 'push notification device token',
+            example: 'fcm-device-token-xyz',
+          },
+        },
+      },
+
       // ---- responses ------------------------------------------------------
 
       Error: {
@@ -237,7 +266,49 @@ export const openapiSpec = {
         items: { $ref: '#/components/schemas/MachineView' },
       },
 
+      Profile: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          fullName: { type: 'string', example: 'John Doe' },
+          email: { type: 'string', format: 'email', example: 'john@example.com' },
+          role: { type: 'string', enum: ['customer', 'gym_owner', 'super_admin'] },
+          profileImageUrl: {
+            type: ['string', 'null'],
+            description: 'presigned S3 GET URL, valid for 5 minutes',
+          },
+        },
+      },
+
+      Notification: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          userId: { type: 'string', format: 'uuid' },
+          type: {
+            type: 'string',
+            enum: ['gym_approved', 'gym_rejected', 'account_locked', 'general'],
+          },
+          title: { type: 'string', example: 'Gym approved' },
+          body: { type: 'string', example: 'Your gym is now live on Bodyon.' },
+          isRead: { type: 'boolean', example: false },
+          createdAt: { type: 'string', format: 'date-time' },
+        },
+      },
+
+      NotificationList: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/Notification' },
+      },
+
       DeleteResult: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+        },
+      },
+
+      SuccessResult: {
         type: 'object',
         properties: {
           success: { type: 'boolean', example: true },
@@ -507,6 +578,92 @@ export const openapiSpec = {
           401: errorResponse('missing or invalid token'),
           403: errorResponse('forbidden: not a gym owner'),
           404: errorResponse('no gym found / machine not found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+    },
+
+    '/profile/me': {
+      get: {
+        tags: ['Profile'],
+        summary: "Get the signed-in user's profile",
+        security: bearerAuth,
+        responses: {
+          200: jsonResponse('the profile', 'Profile'),
+          401: errorResponse('missing or invalid token'),
+          404: errorResponse('user not found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+      patch: {
+        tags: ['Profile'],
+        summary: "Update the signed-in user's profile",
+        description: 'Send only the fields you want to change.',
+        security: bearerAuth,
+        requestBody: jsonBody('UpdateProfileInput', {
+          fullName: 'John Doe',
+        }),
+        responses: {
+          200: jsonResponse('profile updated', 'Profile'),
+          400: errorResponse('validation failed'),
+          401: errorResponse('missing or invalid token'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+    },
+
+    '/notifications': {
+      get: {
+        tags: ['Notifications'],
+        summary: "List the signed-in user's notifications",
+        description: 'Newest first.',
+        security: bearerAuth,
+        responses: {
+          200: jsonResponse('the notifications', 'NotificationList'),
+          401: errorResponse('missing or invalid token'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+    },
+
+    '/notifications/{id}': {
+      parameters: [
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'notification id',
+          schema: { type: 'string', format: 'uuid' },
+        },
+      ],
+      delete: {
+        tags: ['Notifications'],
+        summary: 'Delete a notification',
+        description: 'Only notifications belonging to the signed-in user can be deleted.',
+        security: bearerAuth,
+        responses: {
+          200: jsonResponse('notification deleted', 'DeleteResult'),
+          401: errorResponse('missing or invalid token'),
+          404: errorResponse('notification not found'),
+          500: errorResponse('something went wrong'),
+        },
+      },
+    },
+
+    '/notifications/device-token': {
+      post: {
+        tags: ['Notifications'],
+        summary: 'Register a device token for push notifications',
+        description:
+          'Upserts the token. If it is already registered to another user, it is reassigned to the signed-in user.',
+        security: bearerAuth,
+        requestBody: jsonBody('SaveDeviceTokenInput', {
+          token: 'fcm-device-token-xyz',
+        }),
+        responses: {
+          200: jsonResponse('token saved', 'SuccessResult'),
+          400: errorResponse('validation failed'),
+          401: errorResponse('missing or invalid token'),
           500: errorResponse('something went wrong'),
         },
       },
