@@ -6,7 +6,7 @@ const router = Router()
 router.post('/signup', signup)
 router.post('/signin', signin)
 router.post('/forgotpassword', forgotPassword)
-router.post('/forgotpassword', resetPassword)
+router.post('/resetpassword', resetPassword)
 
 
 export default router
