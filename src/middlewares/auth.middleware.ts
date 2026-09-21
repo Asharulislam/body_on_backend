@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { verifyToken } from '../utils/jwt'
+import { verifyToken } from '../core/utils/jwt'
 
 // extend Express's Request type so we can attach the user
 declare global {

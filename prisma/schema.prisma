@@ -39,6 +39,20 @@ model User {
     gym             Gym?
     notifications   Notification[]
     deviceTokens    DeviceToken[]
+    passwordReset   PasswordReset?
+}
+
+model PasswordReset {
+    id String @id @default(uuid())
+    otpHash      String
+    otpExpiresAt DateTime
+    otpAttempts  Int      @default(0)
+    resetTokenHash      String?
+    resetTokenExpiresAt DateTime?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId String @unique
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Gym {
