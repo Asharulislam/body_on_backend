@@ -11,174 +11,239 @@ import "dotenv/config";
 const errorResponse = (description: string) => ({
   description,
   content: {
-    'application/json': {
-      schema: { $ref: '#/components/schemas/Error' },
+    "application/json": {
+      schema: { $ref: "#/components/schemas/Error" },
     },
   },
-})
+});
 
 const jsonResponse = (description: string, ref: string) => ({
   description,
   content: {
-    'application/json': {
+    "application/json": {
       schema: { $ref: `#/components/schemas/${ref}` },
     },
   },
-})
+});
 
 const jsonBody = (ref: string, example: Record<string, unknown>) => ({
   required: true,
   content: {
-    'application/json': {
+    "application/json": {
       schema: { $ref: `#/components/schemas/${ref}` },
       example,
     },
   },
-})
+});
 
-const bearerAuth = [{ bearerAuth: [] }]
+const bearerAuth = [{ bearerAuth: [] }];
 
 export const openapiSpec = {
-  openapi: '3.1.0',
+  openapi: "3.1.0",
   info: {
-    title: 'Bodyon API',
-    version: '1.0.0',
-    description: 'Backend API for the Bodyon gym platform.',
+    title: "Bodyon API",
+    version: "1.0.0",
+    description: "Backend API for the Bodyon gym platform.",
   },
   servers: [
-    { url: 'https://api.ayrahcollections.com', description: 'production' },
-    { url: `http://localhost:${process.env.PORT || 3000}`, description: 'local' },
+    { url: "https://api.ayrahcollections.com", description: "production" },
+    {
+      url: `http://localhost:${process.env.PORT || 3000}`,
+      description: "local",
+    },
   ],
   tags: [
-    { name: 'Health' },
-    { name: 'Auth' },
-    { name: 'Gym' },
-    { name: 'Upload' },
-    { name: 'Machines' },
-    { name: 'Profile' },
-    { name: 'Notifications' },
+    { name: "Health" },
+    { name: "Auth" },
+    { name: "Gym" },
+    { name: "Upload" },
+    { name: "Machines" },
+    { name: "Profile" },
+    { name: "Notifications" },
   ],
   components: {
     securitySchemes: {
-      bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
     },
     schemas: {
       // ---- requests -------------------------------------------------------
 
       // mirrors signupSchema in modules/auth/auth.validation.ts
       SignupInput: {
-        type: 'object',
-        required: ['fullName', 'email', 'password'],
+        type: "object",
+        required: ["fullName", "email", "password"],
         properties: {
-          fullName: { type: 'string', minLength: 2, example: 'John Doe' },
-          email: { type: 'string', format: 'email', example: 'john@example.com' },
-          password: { type: 'string', minLength: 6, example: 'secret123' },
+          fullName: { type: "string", minLength: 2, example: "John Doe" },
+          email: {
+            type: "string",
+            format: "email",
+            example: "john@example.com",
+          },
+          password: { type: "string", minLength: 6, example: "secret123" },
           role: {
-            type: 'string',
-            enum: ['customer', 'gym_owner'],
-            default: 'customer',
-            description: 'defaults to customer when omitted',
+            type: "string",
+            enum: ["customer", "gym_owner"],
+            default: "customer",
+            description: "defaults to customer when omitted",
           },
         },
       },
 
       // mirrors signinSchema in modules/auth/auth.validation.ts
       SigninInput: {
-        type: 'object',
-        required: ['email', 'password'],
+        type: "object",
+        required: ["email", "password"],
         properties: {
-          email: { type: 'string', format: 'email', example: 'john@example.com' },
-          password: { type: 'string', minLength: 1, example: 'secret123' },
+          email: {
+            type: "string",
+            format: "email",
+            example: "john@example.com",
+          },
+          password: { type: "string", minLength: 1, example: "secret123" },
         },
       },
 
       // mirrors createGymSchema in modules/gym/gym.validation.ts
       CreateGymInput: {
-        type: 'object',
-        required: ['gymName', 'address', 'city'],
+        type: "object",
+        required: ["gymName", "address", "city"],
         properties: {
-          gymName: { type: 'string', minLength: 2, example: 'Iron Works Gym' },
-          address: { type: 'string', minLength: 1, example: '12 Mall Road' },
-          city: { type: 'string', minLength: 1, example: 'Lahore' },
-          description: { type: 'string', example: '24/7 strength and cardio facility' },
-          phone: { type: 'string', example: '+92 300 1234567' },
+          gymName: { type: "string", minLength: 2, example: "Iron Works Gym" },
+          address: { type: "string", minLength: 1, example: "12 Mall Road" },
+          city: { type: "string", minLength: 1, example: "Lahore" },
+          description: {
+            type: "string",
+            example: "24/7 strength and cardio facility",
+          },
+          phone: { type: "string", example: "+92 300 1234567" },
         },
       },
 
       // mirrors updateGymSchema in modules/gym/gym.validation.ts — all optional
       UpdateGymInput: {
-        type: 'object',
+        type: "object",
         properties: {
-          gymName: { type: 'string', minLength: 2, example: 'Iron Works Gym' },
-          address: { type: 'string', minLength: 1, example: '12 Mall Road' },
-          city: { type: 'string', minLength: 1, example: 'Lahore' },
-          description: { type: 'string', example: 'Now with a new cardio floor' },
-          phone: { type: 'string', example: '+92 300 1234567' },
+          gymName: { type: "string", minLength: 2, example: "Iron Works Gym" },
+          address: { type: "string", minLength: 1, example: "12 Mall Road" },
+          city: { type: "string", minLength: 1, example: "Lahore" },
+          description: {
+            type: "string",
+            example: "Now with a new cardio floor",
+          },
+          phone: { type: "string", example: "+92 300 1234567" },
         },
       },
 
       // mirrors uploadSchema in modules/upload/upload.validation.ts
       UploadInput: {
-        type: 'object',
-        required: ['folder', 'contentType'],
+        type: "object",
+        required: ["folder", "contentType"],
         properties: {
-          folder: { type: 'string', enum: ['gyms', 'machines', 'profiles'] },
+          folder: { type: "string", enum: ["gyms", "machines", "profiles"] },
           contentType: {
-            type: 'string',
-            enum: ['image/jpeg', 'image/png', 'image/webp'],
+            type: "string",
+            enum: ["image/jpeg", "image/png", "image/webp"],
           },
         },
       },
 
       // mirrors createMachineSchema in modules/machines/machines.validation.ts
       CreateMachineInput: {
-        type: 'object',
-        required: ['machineName', 'description', 'imageKey'],
+        type: "object",
+        required: ["machineName", "description", "imageKey"],
         properties: {
-          machineName: { type: 'string', minLength: 2, example: 'Leg Press' },
-          description: { type: 'string', minLength: 1, example: '45-degree plate-loaded leg press' },
-          imageKey: {
-            type: 'string',
+          machineName: { type: "string", minLength: 2, example: "Leg Press" },
+          description: {
+            type: "string",
             minLength: 1,
-            description: 'key returned by /upload/url (folder: machines)',
-            example: 'machines/abc123.jpg',
+            example: "45-degree plate-loaded leg press",
+          },
+          imageKey: {
+            type: "string",
+            minLength: 1,
+            description: "key returned by /upload/url (folder: machines)",
+            example: "machines/abc123.jpg",
           },
         },
       },
 
       // mirrors updateMachineSchema in modules/machines/machines.validation.ts — all optional
       UpdateMachineInput: {
-        type: 'object',
+        type: "object",
         properties: {
-          machineName: { type: 'string', minLength: 2, example: 'Leg Press' },
-          description: { type: 'string', minLength: 1, example: 'Recently serviced' },
-          imageKey: { type: 'string', minLength: 1, example: 'machines/def456.jpg' },
+          machineName: { type: "string", minLength: 2, example: "Leg Press" },
+          description: {
+            type: "string",
+            minLength: 1,
+            example: "Recently serviced",
+          },
+          imageKey: {
+            type: "string",
+            minLength: 1,
+            example: "machines/def456.jpg",
+          },
         },
       },
 
       // mirrors updateProfileSchema in modules/user/user.validation.ts — all optional
       UpdateProfileInput: {
-        type: 'object',
+        type: "object",
         properties: {
-          fullName: { type: 'string', minLength: 2, example: 'John Doe' },
+          fullName: { type: "string", minLength: 2, example: "John Doe" },
           profileImage: {
-            type: 'string',
-            description: 'key returned by /upload/url (folder: profiles)',
-            example: 'profiles/abc123.jpg',
+            type: "string",
+            description: "key returned by /upload/url (folder: profiles)",
+            example: "profiles/abc123.jpg",
           },
         },
       },
 
       // mirrors saveTokenSchema in modules/notification/notification.validation.ts
       SaveDeviceTokenInput: {
-        type: 'object',
-        required: ['token'],
+        type: "object",
+        required: ["token"],
         properties: {
           token: {
-            type: 'string',
+            type: "string",
             minLength: 1,
-            description: 'push notification device token',
-            example: 'fcm-device-token-xyz',
+            description: "push notification device token",
+            example: "fcm-device-token-xyz",
+          },
+        },
+      },
+
+      ForgotPasswordInput: {
+        type: "object",
+        required: ["email"],
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            example: "artist-8@example.com",
+          },
+        },
+      },
+
+      ResetPasswordInput: {
+        type: "object",
+        required: ["email", "code", "newPassword"],
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            example: "artist-8@example.com",
+          },
+          code: {
+            type: "string",
+            minLength: 6,
+            maxLength: 6,
+            example: "941807",
+            description: "6-digit OTP sent to the email address",
+          },
+          newPassword: {
+            type: "string",
+            minLength: 8,
+            example: "Test12345",
           },
         },
       },
@@ -186,489 +251,585 @@ export const openapiSpec = {
       // ---- responses ------------------------------------------------------
 
       Error: {
-        type: 'object',
-        required: ['error'],
+        type: "object",
+        required: ["error"],
         properties: {
-          error: { type: 'string', example: 'validation failed' },
+          error: { type: "string", example: "validation failed" },
           details: {
-            type: 'array',
-            items: { type: 'string' },
-            description: 'present on validation errors only',
+            type: "array",
+            items: { type: "string" },
+            description: "present on validation errors only",
           },
         },
       },
 
       User: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string', format: 'uuid' },
-          fullName: { type: 'string', example: 'John Doe' },
-          email: { type: 'string', format: 'email', example: 'john@example.com' },
-          role: { type: 'string', enum: ['customer', 'gym_owner', 'super_admin'] },
+          id: { type: "string", format: "uuid" },
+          fullName: { type: "string", example: "John Doe" },
+          email: {
+            type: "string",
+            format: "email",
+            example: "john@example.com",
+          },
+          role: {
+            type: "string",
+            enum: ["customer", "gym_owner", "super_admin"],
+          },
         },
       },
 
       AuthResult: {
-        type: 'object',
+        type: "object",
         properties: {
-          token: { type: 'string', description: 'JWT — send as: Authorization: Bearer <token>' },
-          user: { $ref: '#/components/schemas/User' },
+          token: {
+            type: "string",
+            description: "JWT — send as: Authorization: Bearer <token>",
+          },
+          user: { $ref: "#/components/schemas/User" },
         },
       },
 
       Gym: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string', format: 'uuid' },
-          gymName: { type: 'string', example: 'Iron Works Gym' },
-          description: { type: ['string', 'null'] },
-          address: { type: 'string', example: '12 Mall Road' },
-          city: { type: 'string', example: 'Lahore' },
-          phone: { type: ['string', 'null'] },
-          gymStatus: { type: 'string', enum: ['pending', 'approved', 'rejected'] },
-          rejectionReason: { type: ['string', 'null'] },
-          ownerId: { type: 'string', format: 'uuid' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' },
+          id: { type: "string", format: "uuid" },
+          gymName: { type: "string", example: "Iron Works Gym" },
+          description: { type: ["string", "null"] },
+          address: { type: "string", example: "12 Mall Road" },
+          city: { type: "string", example: "Lahore" },
+          phone: { type: ["string", "null"] },
+          gymStatus: {
+            type: "string",
+            enum: ["pending", "approved", "rejected"],
+          },
+          rejectionReason: { type: ["string", "null"] },
+          ownerId: { type: "string", format: "uuid" },
+          createdAt: { type: "string", format: "date-time" },
+          updatedAt: { type: "string", format: "date-time" },
         },
       },
 
       // full record — returned by create and update
       Machine: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string', format: 'uuid' },
-          machineName: { type: 'string', example: 'Leg Press' },
-          description: { type: 'string', example: '45-degree plate-loaded leg press' },
-          imageKey: { type: 'string', example: 'machines/abc123.jpg' },
-          gymId: { type: 'string', format: 'uuid' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' },
+          id: { type: "string", format: "uuid" },
+          machineName: { type: "string", example: "Leg Press" },
+          description: {
+            type: "string",
+            example: "45-degree plate-loaded leg press",
+          },
+          imageKey: { type: "string", example: "machines/abc123.jpg" },
+          gymId: { type: "string", format: "uuid" },
+          createdAt: { type: "string", format: "date-time" },
+          updatedAt: { type: "string", format: "date-time" },
         },
       },
 
       // returned by list and get-one — imageKey is swapped for a viewable URL
       MachineView: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string', format: 'uuid' },
-          machineName: { type: 'string', example: 'Leg Press' },
-          description: { type: 'string', example: '45-degree plate-loaded leg press' },
+          id: { type: "string", format: "uuid" },
+          machineName: { type: "string", example: "Leg Press" },
+          description: {
+            type: "string",
+            example: "45-degree plate-loaded leg press",
+          },
           imageUrl: {
-            type: ['string', 'null'],
-            description: 'presigned S3 GET URL, valid for 5 minutes',
+            type: ["string", "null"],
+            description: "presigned S3 GET URL, valid for 5 minutes",
           },
         },
       },
 
       MachineList: {
-        type: 'array',
-        items: { $ref: '#/components/schemas/MachineView' },
+        type: "array",
+        items: { $ref: "#/components/schemas/MachineView" },
       },
 
       Profile: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string', format: 'uuid' },
-          fullName: { type: 'string', example: 'John Doe' },
-          email: { type: 'string', format: 'email', example: 'john@example.com' },
-          role: { type: 'string', enum: ['customer', 'gym_owner', 'super_admin'] },
+          id: { type: "string", format: "uuid" },
+          fullName: { type: "string", example: "John Doe" },
+          email: {
+            type: "string",
+            format: "email",
+            example: "john@example.com",
+          },
+          role: {
+            type: "string",
+            enum: ["customer", "gym_owner", "super_admin"],
+          },
           profileImageUrl: {
-            type: ['string', 'null'],
-            description: 'presigned S3 GET URL, valid for 5 minutes',
+            type: ["string", "null"],
+            description: "presigned S3 GET URL, valid for 5 minutes",
           },
         },
       },
 
       Notification: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string', format: 'uuid' },
-          userId: { type: 'string', format: 'uuid' },
+          id: { type: "string", format: "uuid" },
+          userId: { type: "string", format: "uuid" },
           type: {
-            type: 'string',
-            enum: ['gym_approved', 'gym_rejected', 'account_locked', 'general'],
+            type: "string",
+            enum: ["gym_approved", "gym_rejected", "account_locked", "general"],
           },
-          title: { type: 'string', example: 'Gym approved' },
-          body: { type: 'string', example: 'Your gym is now live on Bodyon.' },
-          isRead: { type: 'boolean', example: false },
-          createdAt: { type: 'string', format: 'date-time' },
+          title: { type: "string", example: "Gym approved" },
+          body: { type: "string", example: "Your gym is now live on Bodyon." },
+          isRead: { type: "boolean", example: false },
+          createdAt: { type: "string", format: "date-time" },
         },
       },
 
       NotificationList: {
-        type: 'array',
-        items: { $ref: '#/components/schemas/Notification' },
+        type: "array",
+        items: { $ref: "#/components/schemas/Notification" },
       },
 
       DeleteResult: {
-        type: 'object',
+        type: "object",
         properties: {
-          success: { type: 'boolean', example: true },
+          success: { type: "boolean", example: true },
         },
       },
 
       SuccessResult: {
-        type: 'object',
+        type: "object",
         properties: {
-          success: { type: 'boolean', example: true },
+          success: { type: "boolean", example: true },
         },
       },
 
       UploadUrl: {
-        type: 'object',
+        type: "object",
         properties: {
-          uploadUrl: { type: 'string', description: 'presigned S3 URL — PUT the file here' },
-          key: { type: 'string', example: 'gyms/abc123.jpg' },
+          uploadUrl: {
+            type: "string",
+            description: "presigned S3 URL — PUT the file here",
+          },
+          key: { type: "string", example: "gyms/abc123.jpg" },
         },
       },
 
       ViewUrl: {
-        type: 'object',
+        type: "object",
         properties: {
           url: {
-            type: 'string',
-            description: 'presigned S3 GET URL, valid for 5 minutes',
+            type: "string",
+            description: "presigned S3 GET URL, valid for 5 minutes",
           },
         },
       },
 
       Health: {
-        type: 'object',
+        type: "object",
         properties: {
-          status: { type: 'string', example: 'ok' },
-          uptime: { type: 'number', description: 'process uptime in seconds' },
-          timestamp: { type: 'string', format: 'date-time' },
+          status: { type: "string", example: "ok" },
+          uptime: { type: "number", description: "process uptime in seconds" },
+          timestamp: { type: "string", format: "date-time" },
         },
       },
     },
   },
 
   paths: {
-    '/health': {
+    "/health": {
       get: {
-        tags: ['Health'],
-        summary: 'Check the server is running',
+        tags: ["Health"],
+        summary: "Check the server is running",
         responses: {
-          200: jsonResponse('server is up', 'Health'),
+          200: jsonResponse("server is up", "Health"),
         },
       },
     },
 
-    '/auth/signup': {
+    "/auth/signup": {
       post: {
-        tags: ['Auth'],
-        summary: 'Register a new user',
-        requestBody: jsonBody('SignupInput', {
-          fullName: 'John Doe',
-          email: 'john@example.com',
-          password: 'secret123',
-          role: 'customer',
+        tags: ["Auth"],
+        summary: "Register a new user",
+        requestBody: jsonBody("SignupInput", {
+          fullName: "John Doe",
+          email: "john@example.com",
+          password: "secret123",
+          role: "customer",
         }),
         responses: {
-          201: jsonResponse('user created and signed in', 'AuthResult'),
-          400: errorResponse('validation failed'),
-          409: errorResponse('email already in use'),
-          500: errorResponse('something went wrong'),
+          201: jsonResponse("user created and signed in", "AuthResult"),
+          400: errorResponse("validation failed"),
+          409: errorResponse("email already in use"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/auth/signin': {
+    "/auth/signin": {
       post: {
-        tags: ['Auth'],
-        summary: 'Sign in and receive a JWT',
-        requestBody: jsonBody('SigninInput', {
-          email: 'john@example.com',
-          password: 'secret123',
+        tags: ["Auth"],
+        summary: "Sign in and receive a JWT",
+        requestBody: jsonBody("SigninInput", {
+          email: "john@example.com",
+          password: "secret123",
         }),
         responses: {
-          200: jsonResponse('signed in', 'AuthResult'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('invalid email or password'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("signed in", "AuthResult"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("invalid email or password"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/gym': {
+    "/gym": {
       post: {
-        tags: ['Gym'],
+        tags: ["Gym"],
         summary: "Create the signed-in owner's gym",
-        description: 'Requires the gym_owner role. One gym per owner.',
+        description: "Requires the gym_owner role. One gym per owner.",
         security: bearerAuth,
-        requestBody: jsonBody('CreateGymInput', {
-          gymName: 'Iron Works Gym',
-          address: '12 Mall Road',
-          city: 'Lahore',
-          description: '24/7 strength and cardio facility',
-          phone: '+92 300 1234567',
+        requestBody: jsonBody("CreateGymInput", {
+          gymName: "Iron Works Gym",
+          address: "12 Mall Road",
+          city: "Lahore",
+          description: "24/7 strength and cardio facility",
+          phone: "+92 300 1234567",
         }),
         responses: {
-          201: jsonResponse('gym created', 'Gym'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          409: errorResponse('you already have a gym'),
-          500: errorResponse('something went wrong'),
+          201: jsonResponse("gym created", "Gym"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          409: errorResponse("you already have a gym"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/gym/gymDetails': {
+    "/gym/gymDetails": {
       get: {
-        tags: ['Gym'],
+        tags: ["Gym"],
         summary: "Get the signed-in owner's gym",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('the gym', 'Gym'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("the gym", "Gym"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found"),
+          500: errorResponse("something went wrong"),
         },
       },
       patch: {
-        tags: ['Gym'],
+        tags: ["Gym"],
         summary: "Update the signed-in owner's gym",
-        description: 'Send only the fields you want to change.',
+        description: "Send only the fields you want to change.",
         security: bearerAuth,
-        requestBody: jsonBody('UpdateGymInput', {
-          gymName: 'Iron Works Gym',
-          city: 'Lahore',
+        requestBody: jsonBody("UpdateGymInput", {
+          gymName: "Iron Works Gym",
+          city: "Lahore",
         }),
         responses: {
-          200: jsonResponse('gym updated', 'Gym'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("gym updated", "Gym"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/upload/url': {
+    "/upload/url": {
       post: {
-        tags: ['Upload'],
-        summary: 'Get a presigned S3 upload URL',
+        tags: ["Upload"],
+        summary: "Get a presigned S3 upload URL",
         description:
-          'Returns a URL to PUT the file to, plus the key to store on the record.',
+          "Returns a URL to PUT the file to, plus the key to store on the record.",
         security: bearerAuth,
-        requestBody: jsonBody('UploadInput', {
-          folder: 'gyms',
-          contentType: 'image/jpeg',
+        requestBody: jsonBody("UploadInput", {
+          folder: "gyms",
+          contentType: "image/jpeg",
         }),
         responses: {
-          200: jsonResponse('presigned url issued', 'UploadUrl'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          500: errorResponse('could not create upload url'),
+          200: jsonResponse("presigned url issued", "UploadUrl"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          500: errorResponse("could not create upload url"),
         },
       },
     },
 
-    '/upload/view-url': {
+    "/upload/view-url": {
       get: {
-        tags: ['Upload'],
-        summary: 'Get a presigned URL to view a private object',
+        tags: ["Upload"],
+        summary: "Get a presigned URL to view a private object",
         description:
-          'Pass the key returned by /upload/url. The URL expires after 5 minutes.',
+          "Pass the key returned by /upload/url. The URL expires after 5 minutes.",
         security: bearerAuth,
         parameters: [
           {
-            name: 'key',
-            in: 'query',
+            name: "key",
+            in: "query",
             required: true,
-            description: 'S3 object key',
-            schema: { type: 'string' },
-            example: 'gyms/abc123.jpg',
+            description: "S3 object key",
+            schema: { type: "string" },
+            example: "gyms/abc123.jpg",
           },
         ],
         responses: {
-          200: jsonResponse('presigned url issued', 'ViewUrl'),
-          400: errorResponse('key is required'),
-          401: errorResponse('missing or invalid token'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("presigned url issued", "ViewUrl"),
+          400: errorResponse("key is required"),
+          401: errorResponse("missing or invalid token"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/machines': {
+    "/machines": {
       post: {
-        tags: ['Machines'],
+        tags: ["Machines"],
         summary: "Add a machine to the signed-in owner's gym",
         description:
-          'Requires the gym_owner role. Upload the image first via /upload/url and send its key.',
+          "Requires the gym_owner role. Upload the image first via /upload/url and send its key.",
         security: bearerAuth,
-        requestBody: jsonBody('CreateMachineInput', {
-          machineName: 'Leg Press',
-          description: '45-degree plate-loaded leg press',
-          imageKey: 'machines/abc123.jpg',
+        requestBody: jsonBody("CreateMachineInput", {
+          machineName: "Leg Press",
+          description: "45-degree plate-loaded leg press",
+          imageKey: "machines/abc123.jpg",
         }),
         responses: {
-          201: jsonResponse('machine created', 'Machine'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found'),
-          500: errorResponse('something went wrong'),
+          201: jsonResponse("machine created", "Machine"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found"),
+          500: errorResponse("something went wrong"),
         },
       },
       get: {
-        tags: ['Machines'],
+        tags: ["Machines"],
         summary: "List machines in the signed-in owner's gym",
-        description: 'Newest first.',
+        description: "Newest first.",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('the machines', 'MachineList'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("the machines", "MachineList"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/machines/{id}': {
+    "/machines/{id}": {
       parameters: [
         {
-          name: 'id',
-          in: 'path',
+          name: "id",
+          in: "path",
           required: true,
-          description: 'machine id',
-          schema: { type: 'string', format: 'uuid' },
+          description: "machine id",
+          schema: { type: "string", format: "uuid" },
         },
       ],
       get: {
-        tags: ['Machines'],
-        summary: 'Get one machine',
+        tags: ["Machines"],
+        summary: "Get one machine",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('the machine', 'MachineView'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found / machine not found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("the machine", "MachineView"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found / machine not found"),
+          500: errorResponse("something went wrong"),
         },
       },
       patch: {
-        tags: ['Machines'],
-        summary: 'Update a machine',
-        description: 'Send only the fields you want to change.',
+        tags: ["Machines"],
+        summary: "Update a machine",
+        description: "Send only the fields you want to change.",
         security: bearerAuth,
-        requestBody: jsonBody('UpdateMachineInput', {
-          description: 'Recently serviced',
+        requestBody: jsonBody("UpdateMachineInput", {
+          description: "Recently serviced",
         }),
         responses: {
-          200: jsonResponse('machine updated', 'Machine'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found / machine not found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("machine updated", "Machine"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found / machine not found"),
+          500: errorResponse("something went wrong"),
         },
       },
       delete: {
-        tags: ['Machines'],
-        summary: 'Delete a machine',
+        tags: ["Machines"],
+        summary: "Delete a machine",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('machine deleted', 'DeleteResult'),
-          401: errorResponse('missing or invalid token'),
-          403: errorResponse('forbidden: not a gym owner'),
-          404: errorResponse('no gym found / machine not found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("machine deleted", "DeleteResult"),
+          401: errorResponse("missing or invalid token"),
+          403: errorResponse("forbidden: not a gym owner"),
+          404: errorResponse("no gym found / machine not found"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/profile/me': {
+    "/profile/me": {
       get: {
-        tags: ['Profile'],
+        tags: ["Profile"],
         summary: "Get the signed-in user's profile",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('the profile', 'Profile'),
-          401: errorResponse('missing or invalid token'),
-          404: errorResponse('user not found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("the profile", "Profile"),
+          401: errorResponse("missing or invalid token"),
+          404: errorResponse("user not found"),
+          500: errorResponse("something went wrong"),
         },
       },
       patch: {
-        tags: ['Profile'],
+        tags: ["Profile"],
         summary: "Update the signed-in user's profile",
-        description: 'Send only the fields you want to change.',
+        description: "Send only the fields you want to change.",
         security: bearerAuth,
-        requestBody: jsonBody('UpdateProfileInput', {
-          fullName: 'John Doe',
+        requestBody: jsonBody("UpdateProfileInput", {
+          fullName: "John Doe",
         }),
         responses: {
-          200: jsonResponse('profile updated', 'Profile'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("profile updated", "Profile"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/notifications': {
+    "/notifications": {
       get: {
-        tags: ['Notifications'],
+        tags: ["Notifications"],
         summary: "List the signed-in user's notifications",
-        description: 'Newest first.',
+        description: "Newest first.",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('the notifications', 'NotificationList'),
-          401: errorResponse('missing or invalid token'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("the notifications", "NotificationList"),
+          401: errorResponse("missing or invalid token"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/notifications/{id}': {
+    "/notifications/{id}": {
       parameters: [
         {
-          name: 'id',
-          in: 'path',
+          name: "id",
+          in: "path",
           required: true,
-          description: 'notification id',
-          schema: { type: 'string', format: 'uuid' },
+          description: "notification id",
+          schema: { type: "string", format: "uuid" },
         },
       ],
       delete: {
-        tags: ['Notifications'],
-        summary: 'Delete a notification',
-        description: 'Only notifications belonging to the signed-in user can be deleted.',
+        tags: ["Notifications"],
+        summary: "Delete a notification",
+        description:
+          "Only notifications belonging to the signed-in user can be deleted.",
         security: bearerAuth,
         responses: {
-          200: jsonResponse('notification deleted', 'DeleteResult'),
-          401: errorResponse('missing or invalid token'),
-          404: errorResponse('notification not found'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("notification deleted", "DeleteResult"),
+          401: errorResponse("missing or invalid token"),
+          404: errorResponse("notification not found"),
+          500: errorResponse("something went wrong"),
         },
       },
     },
 
-    '/notifications/device-token': {
+    "/notifications/device-token": {
       post: {
-        tags: ['Notifications'],
-        summary: 'Register a device token for push notifications',
+        tags: ["Notifications"],
+        summary: "Register a device token for push notifications",
         description:
-          'Upserts the token. If it is already registered to another user, it is reassigned to the signed-in user.',
+          "Upserts the token. If it is already registered to another user, it is reassigned to the signed-in user.",
         security: bearerAuth,
-        requestBody: jsonBody('SaveDeviceTokenInput', {
-          token: 'fcm-device-token-xyz',
+        requestBody: jsonBody("SaveDeviceTokenInput", {
+          token: "fcm-device-token-xyz",
         }),
         responses: {
-          200: jsonResponse('token saved', 'SuccessResult'),
-          400: errorResponse('validation failed'),
-          401: errorResponse('missing or invalid token'),
-          500: errorResponse('something went wrong'),
+          200: jsonResponse("token saved", "SuccessResult"),
+          400: errorResponse("validation failed"),
+          401: errorResponse("missing or invalid token"),
+          500: errorResponse("something went wrong"),
+        },
+      },
+    },
+
+    "/auth/password/forgot": {
+      post: {
+        tags: ["Auth"],
+        summary: "Send a password reset OTP",
+        requestBody: jsonBody("ForgotPasswordInput", {
+          email: "artist-8@example.com",
+        }),
+        responses: {
+          200: {
+            description:
+              "Generic response returned whether or not the email exists",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: {
+                      type: "string",
+                      example:
+                        "If the email exists, a password reset OTP has been sent.",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: errorResponse("validation failed"),
+          500: errorResponse("something went wrong"),
+        },
+      },
+    },
+
+    "/auth/password/reset": {
+      post: {
+        tags: ["Auth"],
+        summary: "Reset password using OTP",
+        requestBody: jsonBody("ResetPasswordInput", {
+          email: "artist-8@example.com",
+          code: "941807",
+          newPassword: "Test12345",
+        }),
+        responses: {
+          200: {
+            description: "Password reset successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: {
+                      type: "string",
+                      example: "Password reset successfully",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: errorResponse(
+            "invalid OTP, expired OTP, or invalid reset request",
+          ),
+          500: errorResponse("something went wrong"),
         },
       },
     },
   },
-}
+};
 
-export default openapiSpec
+export default openapiSpec;
