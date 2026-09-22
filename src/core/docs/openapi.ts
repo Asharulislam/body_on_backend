@@ -764,7 +764,7 @@ export const openapiSpec = {
       },
     },
 
-    "/auth/password/forgot": {
+    "/auth/forgotpassword": {
       post: {
         tags: ["Auth"],
         summary: "Send a password reset OTP",
@@ -796,7 +796,7 @@ export const openapiSpec = {
       },
     },
 
-    "/auth/password/reset": {
+    "/auth/resetpassword": {
       post: {
         tags: ["Auth"],
         summary: "Reset password using OTP",
